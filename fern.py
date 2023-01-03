@@ -99,7 +99,7 @@ class Fern:
                 n = int(p[2].getstr())    
             except:
                 raise TypeError("Not an integer.")
-            p[0].duplicate()
+            p[0].duplicate(n)
             return p[0]
 
         @pg.production("selector : selector { WORD }")

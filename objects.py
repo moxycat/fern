@@ -17,6 +17,13 @@ class Element(BaseBox):
         for attr in taginfo[1]:
             self.add_attr(attr, "")
 
+    def copy(self):
+        e = Element(self.tag)
+        e.children = self.children.copy()
+        e.attrs = self.attrs.copy()
+        e.innertext = self.innertext
+        return e
+
     def repr(self, depth=0):
         a = []
         for k, v in self.attrs.items():
@@ -46,9 +53,26 @@ class Element(BaseBox):
         while cur.next:
             cur = cur.next
         cur.next = thing
-    def duplicate(self, n=0):
-        start = self
+    
+    def duplicate(self, n=1):
         end = self
+        new = self
         while end.next:
             end = end.next
+            new = new.next
         
+        # handle n - 1 copies after head element
+        for i in range(n - 1):
+            head = self
+            while head != end.next:
+                new.next = head.copy()
+                for k, v in new.next.attrs.items():
+                    if "@" in v:
+                        new.next.attrs[k] = v.replace("@", str(i + 2))
+                head = head.next
+                new = new.next
+        
+        # handle head
+        for k, v in self.attrs.items():
+            if "@" in v:
+                self.attrs[k] = v.replace("@", "1")
